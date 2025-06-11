@@ -115,6 +115,8 @@ const App = () => {
           )}
 
           {errorMessage && <p className="text-red-500 error-message">{errorMessage}</p>}
+
+          <div className="lgo-img"><img src="/punk.png" alt="Hero Banner" /></div>
         </section>        
       </div>
 
