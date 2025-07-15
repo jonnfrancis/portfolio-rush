@@ -61,7 +61,7 @@ const MovieDetail = () => {
 
         <div className="bg-[var(--color-dark-100)] p-6 rounded-3xl shadow-[0_0_80px_10px_rgba(255,255,255,0.15)] glass">
           <h1 className="text-4xl text-left font-bold mb-2 ml-0 text-white">{movie.title}</h1>
-          <div className="flex items-center gap-4 mb-6 text-[var(--color-light-200)] text-sm">
+          <div className="flex items-center gap-4 mb-6 text-[var(--color-light-200)] text-base">
             <span>{movie.release_date?.split("-")[0]}</span>
             <span>•</span>
             <span>{movie.vote_average ? `PG-13` : "NR"}</span>
@@ -69,7 +69,7 @@ const MovieDetail = () => {
             <span>
               {Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m
             </span>
-            <span className="flex items-center gap-1 ml-auto text-yellow-400">
+            <span className="flex items-center gap-1 ml-auto py-2 px-4 bg-[#221f3d] text-[#a8b5d8] rounded">
               <img src={starIcon} alt="star" className="w-4 h-4" />
               <span>
                 {movie.vote_average.toFixed(1)} / 10 (
@@ -98,25 +98,37 @@ const MovieDetail = () => {
               </div>
             )}
           </div>
+          <div className="flex items-center justify-between">
+            {movie.genres?.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-6">
+                {movie.genres.map((genre) => (
+                  <span
+                    key={genre.id}
+                    className="px-4 py-2 rounded-sm bg-[#221f3d] text-sm text-white shadow-md hover:shadow-pink-400/50 transition-shadow"
+                  >
+                    {genre.name}
+                  </span>
+                ))}
+              </div>
+            )}
 
-          {movie.genres?.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-6">
-              {movie.genres.map((genre) => (
-                <span
-                  key={genre.id}
-                  className="px-3 py-1 rounded-full bg-[var(--pink)] text-sm text-white shadow-md hover:shadow-pink-400/50 transition-shadow"
-                >
-                  {genre.name}
-                </span>
-              ))}
-            </div>
-          )}
+            {movie.homepage && (
+              <a
+                href={movie.homepage}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-gradient-to-r from-[#d6c7ff] to-[#ab8bff] text-[#121212] px-5 py-2 rounded font-medium shadow-md hover:shadow-pink-500/60 transition-shadow"
+              >
+                Visit Homepage →
+              </a>
+            )}
+          </div>
 
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-[var(--color-light-100)] mb-2">
               Overview
             </h2>
-            <p className="text-[var(--color-light-200)] leading-relaxed">
+            <p className="text-white leading-relaxed">
               {movie.overview}
             </p>
           </div>
@@ -163,17 +175,6 @@ const MovieDetail = () => {
               <dd>${movie.revenue?.toLocaleString()}</dd>
             </div>
           </dl>
-
-          {movie.homepage && (
-            <a
-              href={movie.homepage}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block mt-6 bg-[var(--pink)] text-white px-5 py-2 rounded-xl font-medium shadow-md hover:shadow-pink-500/60 transition-shadow"
-            >
-              Visit Homepage →
-            </a>
-          )}
 
           <div className="mt-10">
             <h2 className="text-xl font-semibold text-[var(--color-light-100)] mb-2">
