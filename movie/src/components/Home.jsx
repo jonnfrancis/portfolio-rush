@@ -27,6 +27,11 @@ const Home = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [totalPages, setTotalPages] = useState(null);
+  const [filters, setFilters] = useState({
+    genre: "",
+    year: "",
+    rating: "",
+  });
 
   useDebounce(
     () => {
@@ -44,7 +49,7 @@ const Home = () => {
         ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(
             query
           )}&sort_by=popularity.desc&include_adult=false&page=${page}`
-        : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc&page=${page}`;
+        : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc&include_adult=false&page=${page}`;
 
       const response = await fetch(endpoint, API_OPTIONS);
 
@@ -93,6 +98,18 @@ const Home = () => {
     }
   };
 
+  const filteredMovies = movieList.filter((movie) => {
+    const matchesGenre = filters.genre
+      ? movie.genre_ids.includes(parseInt(filters.genre))
+      : true;
+    const matchesYear = filters.year
+      ? movie.release_date?.startsWith(filters.year)
+      : true;
+    const matchesRating = filters.rating
+      ? movie.vote_average >= parseFloat(filters.rating)
+      : true;
+    return matchesGenre && matchesYear && matchesRating;
+  });
   const loadMoreMovies = async () => {
     const nextPage = page + 1;
 
@@ -133,12 +150,13 @@ const Home = () => {
             <h2>Trending Movies</h2>
             <ul>
               {trendingMovies.map((movie, index) => (
-               <Link to={`/movie/${movie.movie_id}`}> <li key={movie.$id}>
-                  
+                <Link to={`/movie/${movie.movie_id}`}>
+                  {" "}
+                  <li key={movie.$id}>
                     <p>{index + 1}</p>
                     <img src={movie.poster_url} alt={movie.title} />
-                  
-                </li></Link>
+                  </li>
+                </Link>
               ))}
             </ul>
           </section>
@@ -146,6 +164,72 @@ const Home = () => {
 
         <section className="all-movies">
           <h2 className="mt-[40px]">All Movies</h2>
+          <div className="bg-gradient-to-br from-gray-800/60 to-gray-900/80 backdrop-blur-md border border-gray-700 p-6 rounded-2xl mb-8 grid grid-cols-1 md:grid-cols-3 gap-6 shadow-xl">
+            {/* Genre */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-300 mb-2">
+                Genre
+              </label>
+              <select
+                className="w-full p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                value={filters.genre}
+                onChange={(e) =>
+                  setFilters({ ...filters, genre: e.target.value })
+                }
+              >
+                <option value="">All</option>
+                <option value="28">Action</option>
+                <option value="35">Comedy</option>
+                <option value="18">Drama</option>
+                <option value="27">Horror</option>
+                <option value="16">Animation</option>
+                <option value="878">Sci-Fi</option>
+                <option value="53">Thriller</option>
+              </select>
+            </div>
+
+            {/* Release Year */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-300 mb-2">
+                Release Year
+              </label>
+              <input
+                type="number"
+                placeholder="e.g. 2023"
+                className="w-full p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                value={filters.year}
+                onChange={(e) =>
+                  setFilters({ ...filters, year: e.target.value })
+                }
+              />
+            </div>
+
+            {/* Minimum Rating */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-300 mb-2">
+                Min Rating
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                min="0"
+                max="10"
+                placeholder="e.g. 7.5"
+                className="w-full p-3 rounded-xl bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                value={filters.rating}
+                onChange={(e) =>
+                  setFilters({ ...filters, rating: e.target.value })
+                }
+              />
+            </div>
+          </div>
+
+          <button
+            onClick={() => setFilters({ genre: "", year: "", rating: "" })}
+            className="mt-4 text-sm font-medium px-4 py-2 rounded-lg border border-blue-500 text-blue-400 hover:bg-blue-500 hover:text-white transition-all duration-200 shadow-md w-max mx-auto"
+          >
+            Clear Filters
+          </button>
 
           {errorMessage && (
             <p className="text-red-500 error-message">{errorMessage}</p>
@@ -171,7 +255,7 @@ const Home = () => {
               scrollThreshold={0.9}
             >
               <ul>
-                {movieList.map((movie, index) => (
+                {filteredMovies.map((movie, index) => (
                   <MovieCard key={`${movie.id}-${index}`} movie={movie} />
                 ))}
               </ul>
