@@ -263,7 +263,7 @@ const Home = () => {
           )}
 
           <div className="lgo-img">
-            <img src="/punk.png" alt="Hero Banner" />
+            <img src="/bg-1.jpg" alt="Hero Banner" />
           </div>
         </section>
       </div>
